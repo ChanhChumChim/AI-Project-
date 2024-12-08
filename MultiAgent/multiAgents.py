@@ -207,14 +207,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
         "*** YOUR CODE HERE ***"
         def alphaBeta(agentIndex, depth, gameState, alpha, beta):
-            """
-            Hàm Alpha-Beta Pruning chính.
-            - agentIndex: Chỉ số tác nhân hiện tại (Pacman = 0, Ghosts >= 1).
-            - depth: Độ sâu hiện tại trong cây tìm kiếm.
-            - gameState: Trạng thái hiện tại của trò chơi.
-            - alpha: Giá trị alpha hiện tại (cận dưới cho tác nhân tối đa).
-            - beta: Giá trị beta hiện tại (cận trên cho tác nhân tối thiểu).
-            """
             # Điều kiện dừng: trạng thái kết thúc hoặc đạt độ sâu tối đa
             if gameState.isWin() or gameState.isLose() or depth == self.depth:
                 return self.evaluationFunction(gameState)
