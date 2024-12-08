@@ -74,8 +74,6 @@ class ReflexAgent(Agent):
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
         newFood = successorGameState.getFood()
-        newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
         food = newFood.asList()
@@ -330,33 +328,31 @@ def betterEvaluationFunction(currentGameState: GameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    cap = currentGameState.getCapsules()
+    remainingCapsules = currentGameState.getCapsules()
+    currentScore = currentGameState.getScore()
+    capsuleScoreAdjustment = 0
 
-    cur_score = currentGameState.getScore()
-    gh_score = 0
-    c_score = 0
+    # Current Pacman Position
+    pacmanPosition = currentGameState.getPacmanPosition()
+    ghostStates = currentGameState.getGhostStates()
 
-    pcm_pos = currentGameState.getPacmanPosition()
-    ghStates = currentGameState.getGhostStates()
-    #nFL = currentGameState.getFood().asList()
-
-
-
-    if(len(cap) != 0):
-        for c in cap:
-            c_dis = min([manhattanDistance(c, pcm_pos)])
-            if c_dis == 0 :
-                c_score = float(1)/c_dis
+    # Capsule
+    if remainingCapsules:
+        for capsule in remainingCapsules:
+            distanceToCapsule = manhattanDistance(capsule, pacmanPosition)
+            if distanceToCapsule > 0:
+                capsuleScoreAdjustment += 1.0 / distanceToCapsule
             else:
-                c_score = -100
+                capsuleScoreAdjustment -= 100  
 
-    for gh in ghStates:
-        gh_x = (gh.getPosition()[0])
-        gh_y = (gh.getPosition()[1])
-        gh_pos = gh_x,gh_y
-        gh_dis = manhattanDistance(pcm_pos, gh_pos)
+    # Ghost
+    ghostDistanceAdjustment = 0
+    for ghost in ghostStates:
+        ghostPosition = ghost.getPosition()
+        distanceToGhost = manhattanDistance(pacmanPosition, ghostPosition)
+        ghostDistanceAdjustment += 1.0 / (1 + distanceToGhost)  
 
-    return cur_score  - (1.0/1+gh_dis)  + (1.0/1+c_score)
+    return currentScore + capsuleScoreAdjustment - ghostDistanceAdjustment
 
 # Abbreviation
 better = betterEvaluationFunction
